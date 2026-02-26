@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Call GPT-4o-mini Chat Completion API</title>
+</head>
+<body>
+    <h2>Enter Information and Ticket Number</h2>
+    <form id="apiForm">
+        <label for="userInput">Information:</label><br />
+        <textarea id="userInput" name="userInput" rows="6" cols="60" placeholder="Enter your query or information here"></textarea><br /><br />
+
+        <label for="ticketNumber">Ticket Number:</label><br />
+        <input type="text" id="ticketNumber" name="ticketNumber" placeholder="e.g. EDTV-16272" /><br /><br />
+
+        <button type="submit">Submit</button>
+    </form>
+
+    <h3>Response:</h3>
+    <pre id="responseOutput" style="background:#f0f0f0; padding:10px; border:1px solid #ccc;"></pre>
+
+    <script>
+        document.getElementById('apiForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const userInput = document.getElementById('userInput').value.trim();
+            const ticketNumber = document.getElementById('ticketNumber').value.trim();
+
+            if (!userInput || !ticketNumber) {
+                alert('Please enter both information and ticket number.');
+                return;
+            }
+
+            // Prepare payload to send to backend
+            const payload = {
+                userInput: userInput,
+                ticketNumber: ticketNumber
+            };
+
+            // Call backend API endpoint (adjust URL as needed)
+            try {
+                const response = await fetch('/api/call-gpt', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.statusText}`);
+                }
+
+                const data = await response.json();
+                document.getElementById('responseOutput').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('responseOutput').textContent = `Error: ${error.message}`;
+            }
+        });
+    </script>
+</body>
+</html>
